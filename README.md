@@ -1,0 +1,2 @@
+# tradeedge-ai-multi-asset-volatility-breakout-pine-script-indicator-suite
+TradeEdge AI is a premium Pine Script indicator suite for TradingView that uses machine learning to predict volatility breakouts across forex, crypto, and indices. Unlike generic indicators, it adapts to each asset's unique volatility patterns and provides dynamic support/resistance levels with high-probability entry signals. With retail traders in
