@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeEdge AI - Multi-Asset Volatility Breakout Pine Script Indicator Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #37474f 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 35, 126, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00e676;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #00e676;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            color: #1a237e;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300"><path d="M0,100 C300,50 700,150 1000,100 L1000,300 L0,300 Z" fill="rgba(0,230,118,0.1)"/></svg>') no-repeat center center;
+            background-size: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #00e676);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #b0bec5;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            padding: 18px 40px;
+            border: none;
+            border-radius: 30px;
+            color: #1a237e;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            border: 2px solid #00e676;
+            color: #00e676;
+            padding: 16px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .cta-secondary:hover {
+            background: #00e676;
+            color: #1a237e;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: rgba(55, 71, 79, 0.3);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #ffffff;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: rgba(26, 35, 126, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00e676;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #00e676;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            color: #b0bec5;
+            line-height: 1.6;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 100px 0;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a237e;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .step p {
+            color: #b0bec5;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 0;
+            background: rgba(55, 71, 79, 0.3);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .pricing-card {
+            background: rgba(26, 35, 126, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            border-color: #00e676;
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.popular {
+            border-color: #00e676;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a237e;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00e676;
+            margin-bottom: 30px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            color: #b0bec5;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .plan-button {
+            width: 100%;
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a237e;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .plan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 230, 118, 0.3);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 100px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .testimonial {
+            background: rgba(26, 35, 126, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            border-left: 5px solid #00e676;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #b0bec5;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00e676, #00c853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a237e;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .author-info h4 {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .author-info p {
+            color: #b0bec5;
+            font-size: 0.9rem;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 100px 0;
+            background: rgba(55, 71, 79, 0.3);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .faq-item {
+            background: rgba(26, 35, 126, 0.6);
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background: none;
+            border: none;
+            width: 100%;
+            padding: 25px;
+            text-align: left;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 0 25px 25px;
+            color: #b0bec5;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a237e;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            color: #00e676;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #b0bec5;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-section a:hover {
+            color: #00e676;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            color: #b0bec5;
+        }
+
+        /* Email Signup */
+        .email-signup {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .email-input {
+            padding: 12px;
+            border: 2px solid rgba(0, 230, 118, 0.3);
+            border-radius: 10px;
+            background: rgba(26, 35, 126, 0.8);
+            color: #ffffff;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .email-input::placeholder {
+            color: #b0bec5;
+        }
+
+        .email-button {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a237e;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .email-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .cta-button,
+            .cta-secondary {
+                display: block;
+                margin: 10px auto;
+                text-align: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .email-signup {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .email-input {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <div class="logo">TradeEdge AI</div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#testimonials">Reviews</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+                <a href="#pricing" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>AI-Powered Volatility Breakouts That Actually Work</h1>
+                <p class="hero-subtitle">Stop losing money with generic indicators. TradeEdge AI uses machine learning to predict high-probability volatility breakouts across forex, crypto, and indices with asset-specific models that adapt to each market's unique patterns.</p>
+                <div>
+                    <a href="#pricing" class="cta-button">Start Free Trial</a>
+                    <a href="#how-it-works" class="cta-secondary">See How It Works</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Why TradeEdge AI Beats Generic Indicators</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Asset-Specific ML Models</h3>
+                    <p>Unlike one-size-fits-all indicators, our AI learns each asset's unique volatility patterns. Bitcoin volatility behaves differently than EUR/USD - our models adapt accordingly for maximum accuracy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Dynamic Parameter Adjustment</h3>
+                    <p>Automatically detects market regimes (trending, ranging, high/low volatility) and adjusts parameters in real-time. No more manual tweaking or missing breakouts due to static settings.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Probability-Based Signals</h3>
+                    <p>Get probability scores for each signal instead of binary buy/sell alerts. Make informed decisions with confidence levels and risk-adjusted position sizing recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Verified Performance Data</h3>
+                    <p>Transparent backtesting results with real performance statistics. We publish verified data because our results speak for themselves - unlike most indicator sellers who hide their performance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How TradeEdge AI Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Install Pine Script</h3>
+                    <p>Add TradeEdge AI indicators to your TradingView charts in seconds. Works with all TradingView subscription levels.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Analyzes Markets</h3>
+                    <p>Our machine learning models continuously analyze volatility patterns, market regimes, and asset-specific behaviors in real-time.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get High-Probability Signals</h3>
+                    <p>Receive alerts with probability scores, dynamic support/resistance levels, and optimal entry/exit points based on current market conditions.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Trade With Confidence</h3>
+                    <p>Execute trades knowing you have institutional-grade volatility analysis backing every decision. Track performance with our built-in analytics dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Choose Your Trading Edge</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="plan-name">Starter</h3>
+                    <div class="plan-price">$49<span style="font-size: 1rem; color: #b0bec5;">/mo</span></div>
+                    <ul class="plan-features">
+                        <li>Basic volatility breakout indicator for 1 asset class</li>
+                        <li>Standard alerts</li>
+                        <li>Discord community access</li>
+                        <li>Basic documentation</li>
+                    </ul>
+                    <a href="#" class="plan-button">Start Starter Plan</a>
+                </div>
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3 class="plan-name">Pro Trader</h3>
+                    <div class="plan-price">$97<span style="font-size: 1rem; color: #b0bec5;">/mo</span></div>
+                    <ul class="plan-features">
+                        <li>Full multi-asset suite (forex, crypto, indices)</li>
+                        <li>Advanced ML models</li>
+                        <li>Real-time volatility regime detection</li>
+                        <li>Priority alerts</li>
+                        <li>Backtesting dashboard</li>
+                        <li>Priority Discord support</li>
+                    </ul>
+                    <a href="#" class="plan-button">Start Pro Plan</a>
+                </div>
+                <div class="pricing-card">
+                    <h3 class="plan-name">Institutional</h3>
+                    <div class="plan-price">$197<span style="font-size: 1rem; color: #b0bec5;">/mo</span></div>
+                    <ul class="plan-features">
+                        <li>Complete algorithm suite</li>
+                        <li>Custom asset calibration</li>
+                        <li>API access for automation</li>
+                        <li>Direct developer support</li>
+                        <li>Portfolio risk metrics</li>
+                        <li>White-label licensing available</li>
+                    </ul>
+                    <a href="#" class="plan-button">Start Institutional</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Serious Traders Are Saying</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p class="testimonial-text">"Finally, an indicator that actually adapts to different markets. My EUR/USD and Bitcoin strategies are completely different now, and my win rate has improved significantly since switching from generic RSI setups."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MK</div>
+                        <div class="author-info">
+                            <h4>Marcus K.</h4>
+                            <p>Forex Trader, 8 years experience</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">"The probability scores changed everything for me. Instead of blindly following signals, I now understand the confidence level of each trade. My risk management has never been better."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SL</div>
+                        <div class="author-info">
+                            <h4>Sarah L.</h4>
+                            <p>Crypto Day Trader</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">"As someone who runs a trading education channel, I needed indicators I could trust with my reputation. TradeEdge AI's transparent performance data and consistent results make it perfect for my students."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JR</div>
+                        <div class="author-info">
+                            <h4>James R.</h4>
+                            <p>Trading Educator & YouTuber</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How is this different from other TradingView indicators?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Most indicators use the same static parameters across all assets. TradeEdge AI uses machine learning to create asset-specific models that learn unique volatility patterns for each market. Our indicators also provide probability scores instead of binary signals, giving you better risk management capabilities.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do I need TradingView Pro to use these indicators?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No, TradeEdge AI works with all TradingView subscription levels, including the free tier. However, TradingView Pro users get additional benefits like more alerts and better charting features that complement our indicators.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What assets does TradeEdge AI support?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Our Pro Trader and Institutional plans support forex pairs, major cryptocurrencies, stock indices, and commodities. The Starter plan focuses on one asset class to help you get familiar with our approach before scaling up.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can I see the performance data before buying?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely. We provide verified backtesting results and performance statistics for all our indicators. Unlike many competitors, we're transparent about our results because we're confident in our technology's performance.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Is there a money-back guarantee?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we offer a 30-day money-back guarantee. If TradeEdge AI doesn't improve your trading results within 30 days, we'll refund your first month's subscription - no questions asked.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TradeEdge AI</h3>
+                    <p>Institutional-grade volatility analysis for serious retail traders.</p>
+                    <div class="email-signup">
+                        <input type="email" placeholder="Enter your email" class="email-input">
+                        <button class="email-button">Get Updates</button>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#">Documentation</a>
+                    <a href="#">API Access</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="#faq">FAQ</a>
+                    <a href="#">Discord Community</a>
+                    <a href="#">Contact Support</a>
+                    <a href="#">Performance Data</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Risk Disclosure</a>
+                    <a href="#">Refund Policy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TradeEdge AI. All rights reserved. Trading involves substantial risk of loss.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const isOpen = answer.style.display === 'block';
+                
+                // Close all answers
+                document.querySelectorAll('.faq-answer').forEach(ans => {
+                    ans.style.display = 'none';
+                });
+                document.querySelectorAll('.faq-question span').forEach(span => {
+                    span.textContent = '+';
+                });
+                
+                // Toggle current answer
+                if (!isOpen) {
+                    answer.style.display = 'block';
+                    button.querySelector('span').textContent = '-';
+                }
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target
