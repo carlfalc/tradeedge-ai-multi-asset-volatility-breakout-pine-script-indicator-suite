@@ -1,0 +1,16 @@
+{
+  "name": "tradeedge-ai-multi-asset-volatility-breakout-pine-script-indicator-suite",
+  "version": "0.1.0",
+  "description": "TradeEdge AI is a premium Pine Script indicator suite for TradingView that uses machine learning to predict volatility breakouts across forex, crypto, and indices. Unlike generic indicators, it adapts",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "ai",
+    "saas",
+    "the-firm"
+  ],
+  "author": "The Firm — AI Venture Studio",
+  "license": "MIT"
+}
